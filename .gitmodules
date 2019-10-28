@@ -1,0 +1,3 @@
+[submodule "chapter-splitter"]
+	path = chapter-splitter
+	url = https://github.com/OpenBookPublishers/chapter-splitter.git
