@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+cd "$(dirname $0)"
+
+check () {
+    if ! [ -x "$(command -v $1)" ]; then
+	echo "Error: $1 is not installed." >&2
+	exit 1
+    fi
+}
+
+check "pip3"
+check "pdftk"
+check "exiftool"
+check "pyvenv-3.5"
+
+git submodule update --init
+
+pyvenv-3.5 .venv
+source .venv/bin/activate
+pip3 install -r chapter-splitter/requirements.txt
