@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -e
+
+book_name=$1
+
+cleanup () {
+    local rv=$?
+    rm -rf -- "$work_dir"
+    exit $rv
+}
+
+trap cleanup EXIT
+
+cd $(dirname $0)
+source .venv/bin/activate
+
+pdf_file_path=$(pwd)/${book_name}.pdf
+
+work_dir=$(mktemp -d -t obp-extract-chap-XXXXXX)
+
+doi=$(cat ${book_name}.json | \
+      python3 -c "import sys, json; print(json.load(sys.stdin)['doi'])")
+
+(cd chapter-splitter/ ; \
+
+    echo "Start chapter splitting"
+    python3 main.py ${pdf_file_path} \
+	            $work_dir \
+	            --doi $doi)
+
+echo "Copy chapter PDFs back"
+cp $work_dir/*.pdf .
+
+echo "Create a copy of the original PDF file"
+cp ${book_name}.pdf $(basename $doi).pdf
